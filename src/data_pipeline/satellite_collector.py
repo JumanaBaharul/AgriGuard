@@ -12,12 +12,12 @@ class AgriGuardDataCollector:
         self.landsat_collection = 'LANDSAT/LC08/C02/T1_L2'
         
     def define_study_areas(self):
-        """Define agricultural regions in Karnataka for disease monitoring"""
+        """Define agricultural regions in Tamil Nadu for disease monitoring"""
         study_areas = {
-            'mysore_tomato': ee.Geometry.Rectangle([76.5, 12.2, 77.0, 12.7]),
-            'belgaum_cotton': ee.Geometry.Rectangle([74.4, 15.8, 75.0, 16.3]),
-            'hassan_coffee': ee.Geometry.Rectangle([75.8, 13.0, 76.3, 13.5]),
-            'mandya_sugarcane': ee.Geometry.Rectangle([76.8, 12.4, 77.3, 12.9])
+            'coimbatore_tomato': ee.Geometry.Rectangle([76.8, 10.8, 77.2, 11.2]),
+            'tiruppur_cotton': ee.Geometry.Rectangle([77.0, 10.8, 77.5, 11.3]),
+            'nilgiris_tea': ee.Geometry.Rectangle([76.5, 11.2, 77.0, 11.7]),
+            'thanjavur_sugarcane': ee.Geometry.Rectangle([79.0, 10.5, 79.6, 10.9])
         }
         return study_areas
     
@@ -159,12 +159,12 @@ if __name__ == "__main__":
     collector = AgriGuardDataCollector()
     study_areas = collector.define_study_areas()
     
-    # Test with Mysore tomato region
-    mysore_region = study_areas['mysore_tomato']
+    # Test with Coimbatore tomato region
+    coimbatore_region = study_areas['coimbatore_tomato']
     
     # Collect recent 6 months of data
     time_series = collector.collect_temporal_data(
-        mysore_region, 
+        coimbatore_region,
         '2024-06-01', 
         '2024-12-01', 
         'tomato'
@@ -173,6 +173,6 @@ if __name__ == "__main__":
     print(f"Collected {time_series.size().getInfo()} monthly composites")
     
     # Start export (this will create files in Google Drive)
-    # task = collector.export_training_data('mysore_tomato', mysore_region, '2024-06-01', '2024-12-01')
-    
+    # task = collector.export_training_data('coimbatore_tomato', coimbatore_region, '2024-06-01', '2024-12-01')
+
     print("Data collection setup complete!")
