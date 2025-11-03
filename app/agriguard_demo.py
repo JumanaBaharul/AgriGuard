@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 import os
 
@@ -134,6 +134,14 @@ def main():
     temp_min = st.sidebar.slider("Minimum Temperature (°C)", 5.0, 35.0, 20.0, 0.5)
     humidity = st.sidebar.slider("Relative Humidity (%)", 20.0, 100.0, 70.0, 1.0)
     rainfall = st.sidebar.slider("Rainfall (mm)", 0.0, 50.0, 5.0, 0.5)
+
+    st.sidebar.subheader("🗓️ Forecast Reference")
+    st.sidebar.markdown("*Choose the date you want to generate predictions from*")
+    reference_date = st.sidebar.date_input(
+        "Forecast starting point",
+        datetime.now().date(),
+        help="The 7-day projection will begin the day after this date."
+    )
     
     # Always calculate result for display (moved outside button)
     result = rule_based_prediction(ndvi, evi, savi, rep, temp_max, temp_min, humidity, rainfall)
@@ -287,7 +295,8 @@ def main():
         
         # Risk timeline (now result is always available)
         st.subheader("📅 Risk Forecast")
-        dates = pd.date_range('2024-11-01', periods=7, freq='D')
+        forecast_start = reference_date + timedelta(days=1)
+        dates = pd.date_range(start=forecast_start, periods=7, freq='D')
         base_risk = result['disease_risk_score']
         risk_trend = [base_risk * (1 + 0.1 * np.random.randn()) for _ in range(7)]
         risk_trend = [max(0, min(1, r)) for r in risk_trend]
