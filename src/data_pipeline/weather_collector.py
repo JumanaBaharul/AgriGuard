@@ -18,7 +18,7 @@ class WeatherDataCollector:
         # For now, simulate weather data (replace with real API calls)
         dates = pd.date_range(start_date, end_date, freq='D')
         
-        # Simulate realistic weather patterns for Karnataka
+        # Simulate realistic weather patterns for Tamil Nadu
         np.random.seed(42)
         weather_data = []
         
@@ -94,15 +94,15 @@ class WeatherDataCollector:
 if __name__ == "__main__":
     weather_collector = WeatherDataCollector()
     
-    # Get weather for Mysore region
-    mysore_weather = weather_collector.get_historical_weather(
-        12.45, 76.75,  # Mysore coordinates
+    # Get weather for Coimbatore region
+    coimbatore_weather = weather_collector.get_historical_weather(
+        11.02, 76.96,  # Coimbatore coordinates
         '2024-06-01', '2024-12-01'
     )
-    
+
     # Calculate risk factors
-    mysore_weather = weather_collector.calculate_disease_risk_factors(mysore_weather)
-    
+    coimbatore_weather = weather_collector.calculate_disease_risk_factors(coimbatore_weather)
+
     print("Weather data collected!")
-    print(mysore_weather.head())
-    print(f"Average disease favorability: {mysore_weather['disease_favorability'].mean():.3f}")
+    print(coimbatore_weather.head())
+    print(f"Average disease favorability: {coimbatore_weather['disease_favorability'].mean():.3f}")
