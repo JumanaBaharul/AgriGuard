@@ -6,6 +6,12 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import (
+    accuracy_score,
+    precision_recall_fscore_support,
+    classification_report,
+    confusion_matrix,
+)
 import os
 
 # Fix deterministic algorithm issue
@@ -266,6 +272,9 @@ def train_working_model(csv_path='data/processed/agriguard_training_dataset.csv'
     
     print("Starting training...")
     trainer.fit(model, train_loader, val_loader)
+
+    print("\nEvaluating validation metrics...")
+    evaluate_model_performance(model, val_loader, label_encoder)
     
     os.makedirs('models', exist_ok=True)
     torch.save({
@@ -276,6 +285,70 @@ def train_working_model(csv_path='data/processed/agriguard_training_dataset.csv'
     
     print("Training completed and model saved to models/agriguard_working_model.pth!")
     return model, label_encoder
+
+
+def evaluate_model_performance(model, val_loader, label_encoder):
+    """Print standard classification metrics for the validation split."""
+    model.eval()
+
+    device = next(model.parameters()).device
+    all_preds = []
+    all_labels = []
+
+    with torch.no_grad():
+        for batch in val_loader:
+            spatial = batch['spatial'].to(device)
+            spectral = batch['spectral'].to(device)
+            weather = batch['weather'].to(device)
+            labels = batch['label'].to(device)
+
+            outputs = model(spatial, spectral, weather)
+            preds = torch.argmax(outputs, dim=1)
+
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
+
+    if not all_labels:
+        print("No validation samples available for metric computation.")
+        return
+
+    class_indices = np.arange(len(label_encoder.classes_))
+    class_names = label_encoder.inverse_transform(class_indices)
+
+    overall_accuracy = accuracy_score(all_labels, all_preds)
+    print(f"Overall Accuracy: {overall_accuracy:.4f}")
+
+    precision, recall, f1, support = precision_recall_fscore_support(
+        all_labels, all_preds, labels=class_indices, zero_division=0
+    )
+
+    print("\nPer-class metrics:")
+    print("Class\tPrecision\tRecall\tF1-Score\tSupport")
+    for name, p, r, f, s in zip(class_names, precision, recall, f1, support):
+        print(f"{name}\t{p:.4f}\t{r:.4f}\t{f:.4f}\t{s}")
+
+    weighted_metrics = precision_recall_fscore_support(
+        all_labels, all_preds, average='weighted', zero_division=0
+    )
+    macro_metrics = precision_recall_fscore_support(
+        all_labels, all_preds, average='macro', zero_division=0
+    )
+
+    print("\nWeighted Precision: {:.4f}, Recall: {:.4f}, F1-Score: {:.4f}".format(*weighted_metrics[:3]))
+    print("Macro Precision: {:.4f}, Recall: {:.4f}, F1-Score: {:.4f}".format(*macro_metrics[:3]))
+
+    print("\nClassification Report:")
+    print(classification_report(
+        all_labels,
+        all_preds,
+        target_names=class_names,
+        labels=class_indices,
+        zero_division=0,
+    ))
+
+    cm = confusion_matrix(all_labels, all_preds, labels=class_indices)
+    print("Confusion Matrix (rows=true, cols=predicted):")
+    print(cm)
 
 # Run the training
 if __name__ == "__main__":

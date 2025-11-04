@@ -97,8 +97,8 @@ def generate_comprehensive_training_data():
             'green_band': green,
             'red_band': red,
             'nir_band': nir,
-            'lat': np.random.uniform(12.2, 12.7),  # Mysore region
-            'lon': np.random.uniform(76.5, 77.0)
+            'lat': np.random.uniform(10.8, 11.2),  # Coimbatore region
+            'lon': np.random.uniform(76.8, 77.2)
         })
     
     df = pd.DataFrame(training_data)

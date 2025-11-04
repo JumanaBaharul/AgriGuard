@@ -32,7 +32,7 @@ Crop diseases cause 20-40% yield losses globally. Traditional detection methods 
 
 ### Data Pipeline
 - **Satellite Source**: Google Earth Engine API (Sentinel-2)
-- **Geographic Focus**: Karnataka, India (major agricultural region)
+- **Geographic Focus**: Tamil Nadu, India (major agricultural region)
 - **Temporal Coverage**: Full seasonal cycle analysis
 - **Training Data**: 1,000 synthetic samples with realistic disease patterns
 
@@ -110,7 +110,7 @@ open http://localhost:5001
 
 - **Sentinel-2**: 10m resolution multispectral satellite imagery
 - **Weather Data**: Temperature, humidity, rainfall, and derived risk factors
-- **Geographic Focus**: Karnataka agricultural regions (tomato, cotton, wheat)
+- **Geographic Focus**: Tamil Nadu agricultural regions (tomato, cotton, rice)
 - **Temporal Range**: Full seasonal analysis with monsoon pattern modeling
 
 ## 📁 Project Structure
